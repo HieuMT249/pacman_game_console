@@ -3,12 +3,8 @@ class PacmanAgents:
         self.pacman_position = pacman_position
         self.food_positions = food_positions
         self.map_state = map_state
-
-    def is_goal_state(self):
-        # Kiểm tra xem tất cả điểm mồi đã được ăn chưa
-        return not self.food_positions
     
-    # Hàm tạo trạng thái từ bản đồ
+# Hàm tạo trạng thái từ bản đồ
 def create_game_state(map_state):
     pacman_position = None
     food_positions = []

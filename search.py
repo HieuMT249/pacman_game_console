@@ -4,11 +4,10 @@ import heapq
 
 class Search:
     
-    def __init__(self, start, goals, map):
+    def __init__(self, map):
         self.map_data = map
         self.rows = len(self.map_data)
         self.cols = len(self.map_data[0])
-        self.paths, self.total_cost = self.ucs(start, goals)
         
     # Hàm kiểm tra xem đi có đúng hay không
     def is_valid_move(self, x, y):
@@ -22,7 +21,6 @@ class Search:
             if self.is_valid_move(new_x, new_y):
                 neighbors.append((new_x, new_y))
         return neighbors
-
     # Thuật toán UCS
     def ucs(self, start, goals):
         paths = []

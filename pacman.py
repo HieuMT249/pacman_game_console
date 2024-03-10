@@ -12,6 +12,7 @@ class Pacman:
         self.map_data = self.load_map(map_file)
         self.rows = len(self.map_data)
         self.cols = len(self.map_data[0])
+        self.corners = [(1, 1), (1, self.cols - 2), (self.rows - 2, 1), (self.rows - 2, self.cols - 2)]
         
     # Hàm dùng để đọc map từ file
     def load_map(self, file_path):
@@ -27,15 +28,58 @@ class Pacman:
         return self.map_data
     
     # Hàm khởi chạy thuật toán
-    def run_algorithm(self, algorithm_name, pacman_position, food_position, map):
-        search_algorithm = Search(pacman_position, food_position, map)
-        if algorithm_name == 'UCS':
-            return search_algorithm.ucs(pacman_position, food_position)
+    def run_algorithm(self, algorithm_name, pacman_position, food_positions, map):
+        food_corner_positions = set(food_positions + self.corners)
+        search_algorithm = Search(map)
+        current_position = pacman_position
+        total_cost = 0
+        actions = []
+        
+        if algorithm_name == 'UCS': 
+            while food_positions:
+                for goal in food_corner_positions:
+                    paths, cost = search_algorithm.ucs(current_position, [goal])
+                    total_cost+=cost
+                    # Cập nhật vị trí hiện tại
+                    current_position = paths[0][-1] if paths else current_position
+                    
+                    # In từng bước trong mỗi path
+                    for _, path in enumerate(paths):
+                        actions.extend(self.get_actions(path))
+                        for position in path:
+                            self.visualize_game(position, food_positions)
+            print('Actions:', actions)
+            print('Total Cost: ', total_cost)
+            
+        
         elif algorithm_name == 'A*':
             return search_algorithm.a_star()
         else:
             raise ValueError("Unsupported algorithm")
     
+    def get_actions(self, path):
+        actions = []
+        for i in range(1, len(path)):
+            current_position = path[i - 1]
+            next_position = path[i]
+            action = self.get_action(current_position, next_position)
+            actions.append(action)
+        return actions
+
+    def get_action(self, current_position, next_position):
+        x = next_position[0] - current_position[0]
+        y = next_position[1] - current_position[1]
+
+        if x == 1:
+            return 'South'
+        elif x == -1:
+            return 'North'
+        elif y == 1:
+            return 'East'
+        elif y == -1:
+            return 'West'
+        else:
+            return 'Stop'
     
     def draw_map(self, pacman_position, food_positions):
         for row in range(self.rows):
@@ -54,12 +98,12 @@ class Pacman:
     def visualize_game(self, pacman_position, food_positions):
         os.system('cls' if os.name == 'nt' else 'clear')
         
-         # loại bỏ điểm mồi nếu Pacman chạm vào
+        # loại bỏ điểm mồi nếu Pacman chạm vào
         if pacman_position in food_positions:
             food_positions.remove(pacman_position)
             
         self.draw_map(pacman_position, food_positions)
-        time.sleep(1)
+        time.sleep(0.2)    
 
 def main():
     parser = argparse.ArgumentParser(description='Run Pacman game with specified map and algorithm.')
@@ -76,19 +120,7 @@ def main():
     # xác định các trạng thái của game (vị trí pacman, điểm mồi)
     game_state = PacmanAgents.create_game_state(pacman_game.map())
     
-    # trả về đường đi và cost 
-    paths, total_cost = pacman_game.run_algorithm(args.algorithm, game_state.pacman_position, game_state.food_positions, pacman_game.map())
+    pacman_game.run_algorithm(args.algorithm,game_state.pacman_position,game_state.food_positions,pacman_game.map())
     
-
-    # In từng bước trong mỗi path
-    for step, path in enumerate(paths):
-        print(f"\nStep {step + 1}:")
-        for position in path:
-            pacman_game.visualize_game(position, game_state.food_positions)
-
-    print('Paths: ', paths)
-    print('Total Cost: ', total_cost)
-    
-
 if __name__ == "__main__":
     main()
