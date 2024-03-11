@@ -1,9 +1,9 @@
 import PacmanAgents
 from search import Search
 import argparse
-import heapq
 import os
 import time
+from collections import OrderedDict
 
 class Pacman: 
     
@@ -29,7 +29,7 @@ class Pacman:
     
     # Hàm khởi chạy thuật toán
     def run_algorithm(self, algorithm_name, pacman_position, food_positions, map):
-        food_corner_positions = set(food_positions + self.corners)
+        food_corner_positions = list(OrderedDict.fromkeys(food_positions + self.corners))
         search_algorithm = Search(map)
         current_position = pacman_position
         total_cost = 0
