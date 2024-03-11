@@ -21,6 +21,7 @@ class Search:
             if self.is_valid_move(new_x, new_y):
                 neighbors.append((new_x, new_y))
         return neighbors
+    
     # Thuật toán UCS
     def ucs(self, start, goals):
         paths = []
@@ -49,5 +50,33 @@ class Search:
                     
         return paths, total_cost
     
-    def a_star(self):
-        return None
+    def a_star(self, start, goals):
+        paths = []
+        total_cost = 0
+
+        for goal in goals:
+            priority_queue = [(0 + self.heuristic(start, goal), start, [])]  # (priority, current_position, path_so_far)
+            visited = set()
+
+            while priority_queue:
+                current_priority, current_position, path_so_far = heapq.heappop(priority_queue)
+
+                if current_position == goal:
+                    paths.append(path_so_far)
+                    total_cost += current_priority
+                    break
+
+                if current_position in visited:
+                    continue
+
+                visited.add(current_position)
+
+                for neighbor in self.get_neighbors(*current_position):
+                    new_cost = len(path_so_far) + 1
+                    new_priority = new_cost + self.heuristic(neighbor, goal)
+                    heapq.heappush(priority_queue, (new_priority, neighbor, path_so_far + [neighbor]))
+
+        return paths, total_cost
+    
+    def heuristic(self, current_position, goal_position):
+        return abs(current_position[0] - goal_position[0]) + abs(current_position[1] - goal_position[1])
