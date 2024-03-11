@@ -53,7 +53,20 @@ class Pacman:
             
         
         elif algorithm_name == 'A*':
-            return search_algorithm.a_star()
+            while food_positions:
+                for goal in food_corner_positions:
+                    paths, cost = search_algorithm.a_star(current_position, [goal])
+                    total_cost+=cost
+                    # Cập nhật vị trí hiện tại
+                    current_position = paths[0][-1] if paths else current_position
+                    
+                    # In từng bước trong mỗi path
+                    for _, path in enumerate(paths):
+                        actions.extend(self.get_actions(path))
+                        for position in path:
+                            self.visualize_game(position, food_positions)
+            print('Actions:', actions)
+            print('Total Cost: ', total_cost)
         else:
             raise ValueError("Unsupported algorithm")
     
