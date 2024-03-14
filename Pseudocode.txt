@@ -19,3 +19,22 @@ function A-STAR(start, goals) returns paths and total_cost
         heappush(priority_queue, (new_priority, neighbor, path_so_far, [neighbor]))
 
 function HEURISTIC(current_position, goal_position) returns absolute(current_position[0] - goal_position[0]) + absolute(current_position[1] - goal_position[1])
+
+function UCS(start, goals) returns paths and total_cost
+  path <- []
+  total_cost <- 0
+
+  for each goal in goals do
+    priority_queue <- [(0, start, [])]
+    visited <- set()
+    loop do
+      current_priority, current_position, path_so_far <- heappop(priority_queue)
+      if current_position equals goal then 
+        add(path_so_far, paths) 
+        total_cost ← total_cost + current_cost
+        break
+      if current_position in visited then continue
+      add(current_position, visited)
+      for each neighbor in get_neighbors(current_position) do
+        new_cost <- current_cost + 1
+        heappush(priority_queue, (new_cost, neighbor, path_so_far + [neighbor]))
