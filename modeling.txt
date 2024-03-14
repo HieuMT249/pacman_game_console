@@ -1,2 +1,5 @@
 CREATE_GAME_STATE(map_state) - initial state: Trạng thái bắt đầu của Pacman, các điểm mồi trong map
 RUN_ALGORITHM(algorithm_name, pacman_position, food_positions, map) - successor function: Danh sách các actions và tổng chi phí cho thuật toán
+Goal test: Khi các điểm mồi đã được Pacman ăn hết và đã di chuyển hết qua 4 góc của bản đồ
+Path cost: Mỗi bước đi có giá trị là 1
+Transition model : ...
